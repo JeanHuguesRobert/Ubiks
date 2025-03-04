@@ -1,7 +1,10 @@
-## Ubikial, by Srcbook
+## Ubiks
 
-This app was created using https://srcbook.com.
-Need help or want to join the community? Join our [Discord](https://discord.gg/shDEGBSe2d).
+This is a prototype for [Ubikial](https://github.com/JeanHuguesRobert/Ubikial).
+
+It is developped with AI agents according to these [instructions](docs/INSTRUCTIONS.md).
+
+This app was first created using https://srcbook.com.
 
 To run the devserver:
 ```
