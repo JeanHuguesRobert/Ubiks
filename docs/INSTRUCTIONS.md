@@ -14,6 +14,40 @@ Ubikial is an AI-powered platform for managing multiple social media personas an
 4. **User Feedback**: Incorporate feedback at each stage
 5. **Technical Debt Management**: Refactor regularly, don't let technical debt accumulate
 
+## AI-Human Collaboration Model
+
+This project operates under an AI-first development model where the AI system is the primary developer and technical lead:
+
+1. **AI Leadership & Decision Making**:
+   - AI makes all technical decisions independently
+   - Architectural choices are determined by AI based on best practices
+   - Implementation approaches are decided by AI
+   - Code structure and patterns are AI-directed
+   - Project timeline and priorities are AI-managed
+
+2. **Human Support Role**:
+   - Humans provide domain knowledge when requested
+   - Context and clarification are provided on demand
+   - Business requirements are conveyed to AI
+   - Technical constraints are communicated when relevant
+   - Testing assistance is provided when needed
+
+3. **Communication Protocol**:
+   - AI drives all technical discussions
+   - AI determines when input is needed
+   - AI defines implementation specifics
+   - AI sets coding standards
+   - No permission needed for technical decisions
+
+4. **Quality Standards**:
+   - AI enforces all quality standards
+   - AI determines when code is ready
+   - AI decides when to refactor
+   - AI manages technical debt
+   - AI controls deployment readiness
+
+The AI system owns the development process entirely, making all technical decisions while leveraging human expertise as needed. Humans support the AI's decisions and provide input when requested, but do not need to approve or authorize technical choices.
+
 ## Development Phases
 
 ### Phase 1: Foundation (COMPLETED)

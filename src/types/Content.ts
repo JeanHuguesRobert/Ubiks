@@ -1,5 +1,13 @@
 import { SocialPlatform } from "./SocialAccount";
 
+export interface PlatformPostSettings {
+  enabled: boolean;
+  useHashtags: boolean;
+  useImages: boolean;
+  threadEnabled?: boolean;
+  pageId?: string | null;
+}
+
 export interface ContentImage {
   id: string;
   url: string;
@@ -27,14 +35,6 @@ export interface ContentDraft {
   adaptedContent?: Record<SocialPlatform, string>;
 }
 
-export interface PlatformPostSettings {
-  enabled: boolean;
-  useHashtags: boolean;
-  useImages: boolean;
-  threadEnabled?: boolean;
-  pageId?: string | null;
-}
-
 export interface PublishedContent extends ContentDraft {
   publishedAt: string;
   publishedPlatforms: SocialPlatform[];
@@ -44,6 +44,32 @@ export interface PublishedContent extends ContentDraft {
     postUrl?: string;
     error?: string;
   }>;
+}
+
+export interface ContentPost {
+  id: string;
+  title: string;
+  content: string;
+  mediaUrls?: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  status: 'draft' | 'preview' | 'scheduled' | 'published';
+}
+
+export interface PlatformAdaptation {
+  platform: 'twitter' | 'linkedin' | 'facebook' | 'instagram';
+  adaptedContent: string;
+  characterCount: number;
+  mediaSupported: boolean;
+  warnings?: string[];
+}
+
+export interface ContentState {
+  currentDraft: ContentDraft | null;
+  adaptations: Record<SocialPlatform, string>;
+  previewPlatform: SocialPlatform | null;
+  isDirty: boolean;
+  isAdapting: boolean;
 }
 
 // Empty content draft with default values
@@ -90,7 +116,12 @@ export const createEmptyDraft = (userId: string): ContentDraft => {
     },
     status: 'draft',
     userId,
-    adaptedContent: {}
+    adaptedContent: {
+      twitter: '',
+      linkedin: '',
+      facebook: '',
+      instagram: ''
+    }
   };
 };
 

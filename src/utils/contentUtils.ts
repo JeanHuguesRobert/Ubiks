@@ -1,25 +1,14 @@
-import DOMPurify from 'dompurify';
+import DOMPurify from 'isomorphic-dompurify';
 import { ContentDraft } from '../types/Content';
 
 /**
  * Sanitizes HTML content to prevent XSS attacks
  */
 export const sanitizeHtml = (html: string): string => {
-  // If DOMPurify is available (browser environment)
-  if (typeof DOMPurify !== 'undefined') {
-    return DOMPurify.sanitize(html, {
-      ALLOWED_TAGS: [
-        'b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li', 
-        'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'
-      ],
-      ALLOWED_ATTR: ['href', 'target', 'rel']
-    });
-  }
-  
-  // Simple fallback sanitization for server-side rendering or environments without DOMPurify
-  return html
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/on\w+="[^"]*"/g, '');
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['p', 'b', 'i', 'em', 'strong', 'br', 'ul', 'ol', 'li'],
+    ALLOWED_ATTR: []
+  });
 };
 
 /**
@@ -118,4 +107,12 @@ export const extractHashtags = (text: string): string[] => {
   const hashtagRegex = /#[a-zA-Z0-9_]+/g;
   const matches = text.match(hashtagRegex);
   return matches ? matches : [];
+};
+
+/**
+ * Strips HTML tags from content
+ */
+export const stripHtml = (html: string): string => {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  return doc.body.textContent || '';
 };

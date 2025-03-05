@@ -295,3 +295,25 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
     apiEndpoint: ''
   }
 ];
+
+export interface AIProviderDetails {
+  id: string;
+  name: string;
+  description: string;
+  url: string;
+  defaultModel: string;
+  models: string[];
+}
+
+export interface AIConfig {
+  provider: string;
+  apiKey: string;
+  model?: string;
+  endpoint?: string;
+}
+
+export interface AIResponse {
+  text: string;
+  tokens?: number;
+  model?: string;
+}

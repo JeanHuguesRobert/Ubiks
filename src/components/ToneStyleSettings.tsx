@@ -2,17 +2,18 @@ import { useState } from 'react';
 import { CircleAlert } from 'lucide-react';
 import { Persona, personaTones, personaStyles, personaVoices } from '../types/Persona';
 
-interface ToneStyleSettingsProps {
+interface Props {
   persona: Persona;
   onChange: (field: string, value: any) => void;
 }
 
-const ToneStyleSettings = ({ persona, onChange }: ToneStyleSettingsProps) => {
+const ToneStyleSettings: React.FC<Props> = ({ persona, onChange }) => {
   const [sampleText, setSampleText] = useState<string>(
     "We're excited to announce our new product launch next week. It's been a long journey, and we can't wait to share it with you all!"
   );
 
-  const getToneDescription = (tone: string): string => {
+  const getToneDescription = (tone?: string): string => {
+    if( !tone ) return "No description available.";
     const descriptions: Record<string, string> = {
       casual: "Relaxed and conversational, like talking to a friend.",
       professional: "Polished and business-appropriate, maintaining credibility.",
@@ -25,7 +26,8 @@ const ToneStyleSettings = ({ persona, onChange }: ToneStyleSettingsProps) => {
     return descriptions[tone] || "No description available.";
   };
 
-  const getStyleDescription = (style: string): string => {
+  const getStyleDescription = (style?: string): string => {
+    if( !style ) return "No description available.";
     const descriptions: Record<string, string> = {
       conversational: "Natural dialogue that engages the reader directly.",
       informative: "Focused on providing useful information and facts.",
@@ -38,7 +40,8 @@ const ToneStyleSettings = ({ persona, onChange }: ToneStyleSettingsProps) => {
     return descriptions[style] || "No description available.";
   };
 
-  const getVoiceDescription = (voice: string): string => {
+  const getVoiceDescription = (voice?: string): string => {
+    if( !voice ) return "No description available.";
     const descriptions: Record<string, string> = {
       "first-person": "Speaking as 'I' or 'we', creating personal connection.",
       "second-person": "Addressing the reader as 'you', making it about them.",
@@ -97,6 +100,11 @@ const ToneStyleSettings = ({ persona, onChange }: ToneStyleSettingsProps) => {
     
     return preview;
   };
+
+  // When handling platforms, treat them as an array
+  const platformsArray = Array.isArray(persona.platforms) 
+    ? persona.platforms 
+    : [];
 
   return (
     <div className="space-y-8">

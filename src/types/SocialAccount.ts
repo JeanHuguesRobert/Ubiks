@@ -5,7 +5,14 @@ export type AccountStatus = 'active' | 'pending' | 'expired' | 'revoked' | 'reco
 export interface SocialAccountSettings {
   defaultPersonaId: string | null;
   autoPostEnabled: boolean;
-  [key: string]: any; // For platform-specific settings
+  includeHashtags?: boolean;
+  maxHashtags?: number;
+  threadEnabled?: boolean;    // Twitter-specific
+  includeLink?: boolean;      // LinkedIn-specific
+  preferImages?: boolean;     // Facebook-specific
+  pageId?: string | null;     // Facebook-specific
+  preferCarousel?: boolean;   // Instagram-specific
+  [key: string]: any;         // Allow additional platform-specific settings
 }
 
 export interface SocialAccount {
@@ -16,11 +23,10 @@ export interface SocialAccount {
   profileImage?: string;
   accessToken: string;
   refreshToken?: string;
-  tokenExpiresAt?: string;
-  status?: AccountStatus;
-  lastVerified?: string;
-  profileData: any;
   connected: boolean;
+  status: AccountStatus;
+  tokenExpiresAt?: string;
+  lastVerified: string;
   createdAt: string;
   updatedAt: string;
   userId: string;

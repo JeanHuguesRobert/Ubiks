@@ -111,8 +111,9 @@ export class TokenEncryptionService {
   /**
    * Checks if a token is encrypted
    */
-  isEncrypted(token: string): boolean {
-    return token && token.startsWith('ENC_');
+  isEncrypted(token: string | null): boolean {
+    if (!token) return false;
+    return token.startsWith('ENC_');
   }
 }
 

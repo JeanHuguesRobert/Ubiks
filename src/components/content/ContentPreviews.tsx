@@ -13,11 +13,18 @@ interface ContentPreviewsProps {
   adaptedContent?: Record<string, string>;
 }
 
+const defaultValues: Record<SocialPlatform, string | null> = {
+  twitter: null,
+  linkedin: null,
+  facebook: null,
+  instagram: null
+};
+
 const ContentPreviews = ({ 
   content, 
   platforms, 
   personas,
-  defaultPersonaIds = {},
+  defaultPersonaIds = defaultValues,
   adaptedContent = {}
 }: ContentPreviewsProps) => {
   const [expandedPlatform, setExpandedPlatform] = useState<SocialPlatform | null>(

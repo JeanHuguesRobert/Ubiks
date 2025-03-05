@@ -1,8 +1,25 @@
 import { SocialPlatform } from '../../types/SocialAccount';
 import { tokenEncryptionService } from '../TokenEncryptionService';
 
+// Define the structure for optional scopes
+interface OptionalScopes {
+  writing: string[];
+  offline: string[];
+  media: string[];
+  pages?: string[];
+}
+
 // OAuth configuration for each platform
-export const OAUTH_CONFIG = {
+export const OAUTH_CONFIG: Record<SocialPlatform, {
+  clientId: string;
+  redirectUri: string;
+  authEndpoint: string;
+  tokenEndpoint: string;
+  coreScopes: string[];
+  optionalScopes: OptionalScopes;
+  responseType: string;
+  scopeDescriptions: Record<string, string>;
+}> = {
   twitter: {
     clientId: 'twitter-client-id',
     redirectUri: `${window.location.origin}/oauth/callback/twitter`,
@@ -14,7 +31,8 @@ export const OAUTH_CONFIG = {
     optionalScopes: {
       writing: ['tweet.write'],
       offline: ['offline.access'],
-      media: ['media.upload', 'media.read']
+      media: ['media.upload', 'media.read'],
+      pages: undefined
     },
     responseType: 'code',
     // Human-readable descriptions of permissions
@@ -38,7 +56,8 @@ export const OAUTH_CONFIG = {
     optionalScopes: {
       writing: ['w_member_social'],
       offline: [],
-      media: []
+      media: [],
+      pages: undefined
     },
     responseType: 'code',
     // Human-readable descriptions of permissions
@@ -59,7 +78,8 @@ export const OAUTH_CONFIG = {
     optionalScopes: {
       writing: ['pages_manage_posts', 'publish_to_groups'],
       pages: ['pages_read_engagement', 'pages_show_list'],
-      media: []
+      media: [],
+      offline: []
     },
     responseType: 'code',
     // Human-readable descriptions of permissions
@@ -83,7 +103,8 @@ export const OAUTH_CONFIG = {
     optionalScopes: {
       writing: ['user_media'],
       media: [],
-      offline: []
+      offline: [],
+      pages: undefined
     },
     responseType: 'code',
     // Human-readable descriptions of permissions
@@ -143,7 +164,7 @@ export function getScopeDescriptions(platform: SocialPlatform, scopes: string[])
   
   return scopes.map(scope => ({
     scope,
-    description: config.scopeDescriptions[scope] || scope
+    description: (config.scopeDescriptions as Record<string, string>)[scope] || scope
   }));
 }
 

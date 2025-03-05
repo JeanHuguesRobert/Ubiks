@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { SocialPlatformSettings } from '../types/Persona';
 import { AlignJustify, ArrowUpFromDot, Clock, Film, Tag, Image } from 'lucide-react';
 
-interface PlatformSettingsProps {
+interface Props {
   platforms: SocialPlatformSettings[];
   onChange: (platforms: SocialPlatformSettings[]) => void;
 }
@@ -17,7 +17,7 @@ interface AdvancedPlatformSettings {
   characterLimit?: number;
 }
 
-const PlatformSettings = ({ platforms, onChange }: PlatformSettingsProps) => {
+const PlatformSettings: React.FC<Props> = ({ platforms, onChange }) => {
   const [selectedPlatform, setSelectedPlatform] = useState<SocialPlatformSettings | null>(
     platforms.find(p => p.enabled) || null
   );
@@ -60,12 +60,11 @@ const PlatformSettings = ({ platforms, onChange }: PlatformSettingsProps) => {
   });
 
   const handleTogglePlatform = (platformId: string) => {
-    const updatedPlatforms = platforms.map(platform => 
+    const updatedPlatforms: SocialPlatformSettings[] = platforms.map(platform => 
       platform.platformId === platformId 
         ? { ...platform, enabled: !platform.enabled }
         : platform
     );
-    
     onChange(updatedPlatforms);
     
     // Update selected platform if needed
@@ -102,6 +101,13 @@ const PlatformSettings = ({ platforms, onChange }: PlatformSettingsProps) => {
         [setting]: value
       }
     }));
+  };
+
+  const handlePlatformChange = (updatedPlatform: SocialPlatformSettings) => {
+    const updatedPlatforms = platforms.map(p => 
+      p.platformId === updatedPlatform.platformId ? updatedPlatform : p
+    );
+    onChange(updatedPlatforms);
   };
 
   return (

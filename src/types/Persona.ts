@@ -1,5 +1,7 @@
+import { SocialPlatform } from './SocialAccount';
+
 export interface SocialPlatformSettings {
-  platformId: string;
+  platformId: SocialPlatform;
   platformName: string;
   enabled: boolean;
   maxLength?: number;
@@ -11,27 +13,27 @@ export interface SocialPlatformSettings {
 export interface Persona {
   id: string;
   name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-  tone: string;
-  style: string;
-  voice: string;
-  avatarUrl?: string;
-  platforms: SocialPlatformSettings[];
-  userId: string;
+  description?: string;
   githubRepo?: string;
   githubUrl?: string;
+  avatarUrl?: string;  // Make avatarUrl optional
+  updatedAt: string;
+  createdAt: string;
+  tone?: string;
+  style?: string;
+  voice?: string;
+  userId?: string;
+  platforms: SocialPlatformSettings[];  // Ensure this is always an array
 }
 
 export interface PersonaFormData {
   name: string;
-  description: string;
-  tone: string;
-  style: string;
-  voice: string;
+  description?: string;
+  tone?: string;
+  style?: string;
+  voice?: string;
   avatarUrl?: string;
-  platforms: SocialPlatformSettings[];
+  platforms: SocialPlatformSettings[];  // Ensure this is an array
 }
 
 export const defaultPlatforms: SocialPlatformSettings[] = [
@@ -77,7 +79,7 @@ export const emptyPersonaForm: PersonaFormData = {
   tone: 'casual',
   style: 'conversational',
   voice: 'first-person',
-  platforms: defaultPlatforms
+  platforms: defaultPlatforms  // Use the array-based default platforms
 };
 
 export const personaTones = [

@@ -1,142 +1,113 @@
 import React, { useState } from 'react';
-import { useAI } from '../../contexts/AIContext';
-import { AICredentials, AI_PROVIDERS } from '../../types/AI';
-import { Signal, Check, Key, Pencil, RefreshCw, Trash2 } from 'lucide-react';
+import { CheckCircle, Copy, EyeOff, Eye, XCircle } from 'lucide-react';
+import { AIProvider } from '../../types/AI';
 
-const APIKeysList = () => {
-  const { credentials, verifyCredentials, deleteCredentials, loading } = useAI();
-  const [verifyingIds, setVerifyingIds] = useState<string[]>([]);
-  const [deletingIds, setDeletingIds] = useState<string[]>([]);
+interface APIKey {
+  provider: AIProvider;
+  key: string;
+  isValid: boolean;
+  lastVerified?: string;
+}
 
-  const handleVerify = async (id: string) => {
-    setVerifyingIds(prev => [...prev, id]);
+interface APIKeysListProps {
+  apiKeys: APIKey[];
+  onVerifyKey: (provider: AIProvider, key: string) => Promise<boolean>;
+  onUpdateKey: (provider: AIProvider, key: string) => void;
+  onRemoveKey: (provider: AIProvider) => void;
+}
+
+export const APIKeysList: React.FC<APIKeysListProps> = ({
+  apiKeys,
+  onVerifyKey,
+  onUpdateKey,
+  onRemoveKey
+}) => {
+  const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
+  const [verifying, setVerifying] = useState<Record<string, boolean>>({});
+
+  const toggleKeyVisibility = (provider: string) => {
+    setShowKeys(prev => ({
+      ...prev,
+      [provider]: !prev[provider]
+    }));
+  };
+
+  const handleCopyKey = (key: string) => {
+    navigator.clipboard.writeText(key);
+  };
+
+  const handleVerifyKey = async (provider: AIProvider, key: string) => {
+    setVerifying(prev => ({ ...prev, [provider]: true }));
     try {
-      await verifyCredentials(id);
+      await onVerifyKey(provider, key);
     } finally {
-      setVerifyingIds(prev => prev.filter(credId => credId !== id));
+      setVerifying(prev => ({ ...prev, [provider]: false }));
     }
   };
-
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this API key? This action cannot be undone.')) {
-      return;
-    }
-    
-    setDeletingIds(prev => [...prev, id]);
-    try {
-      await deleteCredentials(id);
-    } finally {
-      setDeletingIds(prev => prev.filter(credId => credId !== id));
-    }
-  };
-
-  const getProviderName = (providerId: string) => {
-    const provider = AI_PROVIDERS.find(p => p.id === providerId);
-    return provider?.name || providerId;
-  };
-
-  const getStatusBadge = (status: AICredentials['status']) => {
-    switch (status) {
-      case 'active':
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-            <Check className="w-3 h-3 mr-1" /> Valid
-          </span>
-        );
-      case 'invalid':
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-            <Signal className="w-3 h-3 mr-1" /> Invalid
-          </span>
-        );
-      case 'unverified':
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-            <Signal className="w-3 h-3 mr-1" /> Unverified
-          </span>
-        );
-      default:
-        return null;
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
-    );
-  }
-
-  if (credentials.length === 0) {
-    return (
-      <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
-        <Key className="mx-auto h-12 w-12 text-gray-400" />
-        <h3 className="mt-2 text-sm font-medium text-gray-900">No API Keys</h3>
-        <p className="mt-1 text-sm text-gray-500">
-          You haven't added any AI provider API keys yet.
-        </p>
-      </div>
-    );
-  }
 
   return (
-    <div className="bg-white shadow overflow-hidden rounded-md border border-gray-200">
-      <ul className="divide-y divide-gray-200">
-        {credentials.map((cred) => (
-          <li key={cred.id} className="px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center">
-                  <h3 className="text-sm font-medium text-gray-900">{cred.name}</h3>
-                  <span className="ml-2 text-xs text-gray-500">({getProviderName(cred.provider)})</span>
-                </div>
-                <div className="mt-1 flex items-center">
-                  <span className="text-xs text-gray-500 mr-2">
-                    Added {new Date(cred.createdAt).toLocaleDateString()}
-                  </span>
-                  {getStatusBadge(cred.status)}
-                </div>
-              </div>
-              
-              <div className="flex space-x-2">
-                <button 
-                  onClick={() => handleVerify(cred.id)}
-                  disabled={verifyingIds.includes(cred.id)}
-                  className="p-1 text-gray-400 hover:text-indigo-600 focus:outline-none disabled:opacity-50"
-                  title="Verify API key"
-                >
-                  {verifyingIds.includes(cred.id) ? (
-                    <RefreshCw className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <RefreshCw className="h-5 w-5" />
-                  )}
-                </button>
-                <button
-                  className="p-1 text-gray-400 hover:text-indigo-600 focus:outline-none"
-                  title="Edit API key"
-                >
-                  <Pencil className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={() => handleDelete(cred.id)}
-                  disabled={deletingIds.includes(cred.id)}
-                  className="p-1 text-gray-400 hover:text-red-600 focus:outline-none disabled:opacity-50"
-                  title="Delete API key"
-                >
-                  {deletingIds.includes(cred.id) ? (
-                    <div className="animate-spin h-5 w-5 border-2 border-red-500 border-t-transparent rounded-full"></div>
-                  ) : (
-                    <Trash2 className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
+    <div className="space-y-4">
+      {apiKeys.map(({ provider, key, isValid, lastVerified }) => (
+        <div key={provider} className="bg-white p-4 rounded-lg border shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="font-medium capitalize">{provider}</span>
+              {isValid ? (
+                <CheckCircle className="w-4 h-4 text-green-500" />
+              ) : (
+                <XCircle className="w-4 h-4 text-red-500" />
+              )}
             </div>
-          </li>
-        ))}
-      </ul>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleCopyKey(key)}
+                className="p-1 hover:bg-gray-100 rounded"
+                title="Copy API key"
+              >
+                <Copy className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => toggleKeyVisibility(provider)}
+                className="p-1 hover:bg-gray-100 rounded"
+                title={showKeys[provider] ? 'Hide API key' : 'Show API key'}
+              >
+                {showKeys[provider] ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <input
+              type={showKeys[provider] ? 'text' : 'password'}
+              value={key}
+              onChange={(e) => onUpdateKey(provider, e.target.value)}
+              className="flex-1 px-3 py-1 border rounded text-sm font-mono"
+              placeholder={`Enter ${provider} API key`}
+            />
+            <button
+              onClick={() => handleVerifyKey(provider, key)}
+              disabled={verifying[provider] || !key}
+              className="px-3 py-1 bg-blue-500 text-white rounded disabled:bg-gray-300"
+            >
+              {verifying[provider] ? 'Verifying...' : 'Verify'}
+            </button>
+            <button
+              onClick={() => onRemoveKey(provider)}
+              className="px-3 py-1 bg-red-500 text-white rounded"
+            >
+              Remove
+            </button>
+          </div>
+          {lastVerified && (
+            <p className="mt-1 text-xs text-gray-500">
+              Last verified: {new Date(lastVerified).toLocaleString()}
+            </p>
+          )}
+        </div>
+      ))}
     </div>
   );
 };
-
-export default APIKeysList;

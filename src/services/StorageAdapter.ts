@@ -1,5 +1,5 @@
 import { Persona, PersonaFormData } from '../types/Persona';
-import { githubService, GitHubAuthError, GitHubApiError } from './GitHubService';
+import { githubService, GitHubAuthError, GitHubApiError, CreatePersonaInput } from './GitHubService';
 
 // Main storage adapter interface
 export interface StorageAdapter {
@@ -112,30 +112,25 @@ export class GitHubStorageAdapter implements StorageAdapter {
   }
 
   async savePersona(persona: Persona): Promise<Persona> {
-    try {
-      if (!this.isOnline()) {
-        throw new Error('Not connected to GitHub');
-      }
+    if (!persona.userId) {
+      throw new Error('Cannot save persona without userId');
+    }
 
-      // Create GitHub repository for the persona
-      const repoUrl = await githubService.createPersonaRepository(persona);
-      
-      // Update persona with GitHub info
-      const repoName = `persona-${persona.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
-      const updatedPersona = {
+    // Create a properly typed input for GitHub
+    const createInput: CreatePersonaInput = {
+      ...persona,
+      userId: persona.userId // Now TypeScript knows this is defined
+    };
+
+    try {
+      const repoUrl = await githubService.createPersonaRepository(createInput);
+      return {
         ...persona,
-        githubRepo: repoName,
         githubUrl: repoUrl
       };
-      
-      // Also save to localStorage as a backup
-      await this.localAdapter.savePersona(updatedPersona);
-      
-      return updatedPersona;
     } catch (error) {
-      // Fallback to localStorage
-      console.error('GitHub storage failed, falling back to localStorage:', error);
-      return this.localAdapter.savePersona(persona);
+      console.error('Failed to save persona to GitHub:', error);
+      return persona;
     }
   }
 

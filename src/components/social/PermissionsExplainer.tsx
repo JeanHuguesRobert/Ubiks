@@ -275,7 +275,19 @@ const PermissionsExplainer = ({
 };
 
 // OAuth config reference - imported from OAuthManager
-const OAUTH_CONFIG = {
+interface OAuthConfigType {
+  [key: string]: {
+    coreScopes: string[];
+    optionalScopes: {
+      writing?: string[];
+      offline?: string[];
+      media?: string[];
+      pages?: string[];
+    };
+  };
+}
+
+const OAUTH_CONFIG: OAuthConfigType = {
   twitter: {
     coreScopes: ['tweet.read', 'users.read'],
     optionalScopes: {

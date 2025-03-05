@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import { usePersona } from '../contexts/PersonaContext';
-import { ArrowLeft, CircleAlert, MessageSquare, Palette, Save, Share2 } from 'lucide-react';
+import { ArrowLeft, CircleAlert, MessageSquare, Palette, Save, Settings, Share2 } from 'lucide-react';
 import ToneStyleSettings from '../components/ToneStyleSettings';
 import PlatformSettings from '../components/PlatformSettings';
-import { Persona } from '../types/Persona';
+import { Persona, SocialPlatformSettings } from '../types/Persona';
+import { SocialPlatform } from '../types/Platform.ts';
 
 const PersonaSettings = () => {
   const { id } = useParams<{ id: string }>();
@@ -39,17 +40,15 @@ const PersonaSettings = () => {
     try {
       await updatePersona(persona.id, {
         name: persona.name,
-        description: persona.description,
-        tone: persona.tone,
-        style: persona.style,
-        voice: persona.voice,
-        avatarUrl: persona.avatarUrl,
-        platforms: persona.platforms
+        description: persona.description || '',
+        tone: persona.tone || 'casual',
+        style: persona.style || 'conversational',
+        voice: persona.voice || 'first-person',
+        platforms: persona.platforms // Already using array
       });
       
       setSuccessMessage('Settings saved successfully');
       
-      // Clear success message after 3 seconds
       setTimeout(() => {
         setSuccessMessage(null);
       }, 3000);
@@ -183,7 +182,7 @@ const PersonaSettings = () => {
                   : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              <SettingsIcon className="h-5 w-5 mr-2" />
+              <Settings className="h-5 w-5 mr-2" />
               Advanced
             </button>
           </nav>

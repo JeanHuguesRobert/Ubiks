@@ -66,7 +66,7 @@ const ContentAdaptation = ({
         'None';
       
       // Fill the prompt template
-      const prompt = await fillPromptTemplate('platform-adapt-template', {
+      const promptResponse = await fillPromptTemplate('platform-adapt-template', {
         platform: platformConfigs[platform].name,
         content: content.text,
         style: persona?.style || 'conversational',
@@ -76,7 +76,7 @@ const ContentAdaptation = ({
       
       // Call the AI API
       const response = await completePrompt({
-        prompt,
+        prompt: promptResponse.text,
         options: {
           provider: 'openai', // Use the default provider
           model: 'gpt-3.5-turbo', // Use a default model

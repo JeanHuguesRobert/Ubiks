@@ -2,15 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import ContentEditable, { ContentEditableEvent } from 'react-contenteditable';
 import { Hash, Image, ImagePlus, Paperclip, Smile, Type, X } from 'lucide-react';
 import { ContentDraft } from '../../types/Content';
-import { sanitizeHtml } from '../../utils/contentUtils';
 
 interface ContentEditorProps {
   content: ContentDraft;
   onChange: (content: ContentDraft) => void;
   autoSave?: boolean;
+  placeholder?: string; // Add optional placeholder
 }
 
-const ContentEditor = ({ content, onChange, autoSave = true }: ContentEditorProps) => {
+const ContentEditor = ({ content, onChange, autoSave = true, placeholder }: ContentEditorProps) => {
   const [html, setHtml] = useState(content.html || '');
   const [plainText, setPlainText] = useState(content.text || '');
   const [showToolbar, setShowToolbar] = useState(false);
@@ -218,7 +218,7 @@ const ContentEditor = ({ content, onChange, autoSave = true }: ContentEditorProp
           onFocus={handleFocus}
           onBlur={handleBlur}
           className="outline-none min-h-[150px] max-h-[500px] overflow-y-auto"
-          placeholder="What's on your mind?"
+          data-placeholder={placeholder} // Use data attribute for placeholder
         />
       </div>
     </div>

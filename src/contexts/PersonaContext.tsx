@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Persona, PersonaFormData } from '../types/Persona';
+import { Persona, PersonaFormData, SocialPlatformSettings } from '../types/Persona';
+import { SocialPlatform, platformConfigs } from '../types/SocialAccount';
 import { useAuth } from './AuthContext';
 import { createStorageAdapter, StorageAdapter } from '../services/StorageAdapter';
 import { githubService, GitHubAuthError, GitHubApiError } from '../services/GitHubService';
@@ -91,11 +92,16 @@ export const PersonaProvider = ({ children }: PersonaProviderProps) => {
       
       // Create a new persona with an ID and timestamps
       const newPersona: Persona = {
-        id: `persona-${Date.now()}`,
-        ...personaData,
+        id: `Ubik-${Date.now()}`,
+        name: personaData.name,
+        description: personaData.description,
+        tone: personaData.tone,
+        style: personaData.style,
+        voice: personaData.voice,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        userId: user.id
+        userId: user.id,
+        platforms: transformPlatformSettings(personaData.platforms)
       };
       
       // Save using the storage adapter
@@ -147,6 +153,7 @@ export const PersonaProvider = ({ children }: PersonaProviderProps) => {
       const updatedPersona: Persona = {
         ...personas[personaIndex],
         ...personaData,
+        platforms: transformPlatformSettings(personaData.platforms),
         updatedAt: new Date().toISOString()
       };
       
@@ -304,6 +311,17 @@ export const PersonaProvider = ({ children }: PersonaProviderProps) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const transformPlatformSettings = (platforms: SocialPlatformSettings[]): SocialPlatformSettings[] => {    
+    return platforms.map(platform => ({
+      platformId: platform.platformId,
+      platformName: platform.platformName,
+      enabled: platform.enabled ?? false,
+      supportsTags: platform.supportsTags ?? true,
+      supportsImages: platform.supportsImages ?? true,
+      supportsVideos: platform.supportsVideos ?? true
+    }));
   };
 
   const value = {
